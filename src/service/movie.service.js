@@ -34,7 +34,6 @@ class MovieService {
       const [startYear, endYear] = searchByYears.includes("+")
         ? [searchByYears.slice(0, -1), null]
         : searchByYears.split("-");
-      console.log(startYear, endYear);
       if (endYear) {
         query["release_date"] = {
           $gte: new Date(`${startYear}-01-01`),

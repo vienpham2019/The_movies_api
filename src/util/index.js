@@ -22,10 +22,35 @@ const getSkip = ({ limit, page }) => {
   return (pageValue - 1) * limitValue;
 };
 const convertToObjectIdMongoDB = (id) => new Types.ObjectId(id);
+const isValidEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
 
+const isStrongPassword = (password) => {
+  const minLength = 8;
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasDigit = /\d/.test(password);
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+  if (
+    password.length >= minLength &&
+    hasUpperCase &&
+    hasLowerCase &&
+    hasDigit &&
+    hasSpecialChar
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+};
 module.exports = {
   getSelectData,
   getUnSelectData,
   getSkip,
   convertToObjectIdMongoDB,
+  isValidEmail,
+  isStrongPassword,
 };
