@@ -8,6 +8,7 @@ const {
   getUserByEmail,
   register,
   updateUser,
+  getUserById,
 } = require("../model/user/user.repo");
 const {
   isStrongPassword,
@@ -74,14 +75,18 @@ class UserService {
 
   static async updateUserInfo({ payload, _id }) {
     try {
-      const { email, password } = payload;
+      delete payload?._id;
+      delete payload?.password;
+      const { email } = payload;
+      const foundUser = await getUserById({
+        _id: convertToObjectIdMongoDB(_id),
+      });
 
-      const foundUser = await getUserById(convertToObjectIdMongoDB(_id));
-      if (foundUser) {
+      if (!foundUser) {
         throw new BadRequestError("User not found");
       }
 
-      if (email) {
+      if (email && foundUser.email != email) {
         if (!isValidEmail(email)) {
           throw new BadRequestError("Invalid email");
         }
@@ -91,14 +96,36 @@ class UserService {
         }
       }
 
-      if (password) {
-        delete payload.password;
-      }
-
       return await updateUser({
         _id: foundUser._id,
         payload,
-        select: ["_id", "firstName", "lastName", "email", "dob", "gender"],
+      });
+    } catch (error) {
+      throw new InternalServerError(error);
+    }
+  }
+
+  static async changePassword({ payload, _id }) {
+    try {
+      delete payload?._id;
+      const { password } = payload;
+      if (!password) {
+        throw new BadRequestError("All field required");
+      }
+      const foundUser = await getUserById({
+        _id: convertToObjectIdMongoDB(_id),
+      });
+
+      if (!foundUser) {
+        throw new BadRequestError("User not found");
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hasPassword = await bcrypt.hash(password, salt);
+
+      return await updateUser({
+        _id: foundUser._id,
+        payload: { password: hasPassword },
       });
     } catch (error) {
       throw new InternalServerError(error);

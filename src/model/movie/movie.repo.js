@@ -4,6 +4,13 @@ const movieModel = require("./movie.model");
 const { getSelectData, getSkip } = require("../../util");
 
 // Get
+const getAllMoviesByQuery = async ({ query = {}, select = [] }) => {
+  return await movieModel
+    .find(query)
+    .select(getSelectData(select))
+    .lean()
+    .exec();
+};
 const getAllMovies = async ({
   query,
   page,
@@ -133,6 +140,7 @@ const createMovie = async ({ payload }) => {
 
 module.exports = {
   getAllMovies,
+  getAllMoviesByQuery,
   findMovieById,
   getMovieRecommendations,
   createMovie,

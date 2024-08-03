@@ -21,7 +21,20 @@ class UserController {
   updateUserInfo = async (req, res, next) => {
     new OK({
       message: "Update User info successfully!",
-      metadata: await UserService.updateUserInfo({ ...req.body, ...req.query }),
+      metadata: await UserService.updateUserInfo({
+        payload: req.body,
+        ...req.params,
+      }),
+    }).send(res);
+  };
+
+  changePassword = async (req, res, next) => {
+    new OK({
+      message: "Change Password successfully!",
+      metadata: await UserService.changePassword({
+        payload: req.body,
+        ...req.params,
+      }),
     }).send(res);
   };
 }

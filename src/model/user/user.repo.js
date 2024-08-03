@@ -13,7 +13,7 @@ const getUserByEmail = async ({ email, select = [] }) => {
 
 const getUserById = async ({ _id, select = [] }) => {
   return await userModel
-    .findById(_id)
+    .findOne({ _id })
     .select(getSelectData(select))
     .lean()
     .exec();
@@ -24,12 +24,8 @@ const register = async ({ payload }) => {
 };
 
 // Update
-const updateUser = async ({ payload, _id, select }) => {
-  return await userModel
-    .updateOne({ _id }, payload)
-    .select(getSelectData(select))
-    .lean()
-    .exec();
+const updateUser = async ({ payload, _id }) => {
+  return await userModel.updateOne({ _id }, payload);
 };
 
 module.exports = {
